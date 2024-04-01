@@ -1,0 +1,150 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title> Hello Indeex</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>User Request Form</h1>-->
+<!--<form id="userForm" action="/helloNihar" method="post">-->
+<!--    <label for="userId">User ID:</label>-->
+<!--    <input type="text" id="userId" name="userId" required><br><br>-->
+<!--    <label for="userName">User Name:</label>-->
+<!--    <input type="text" id="userName" name="userName" required><br><br>-->
+<!--    <button type="submit">Submit</button>-->
+<!--</form>-->
+
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Greetings</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>Greetings</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Message</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="greeting :${greetings}">
+        <td th:text = "${greeting.getId()}">id : </td>
+        <td th:text = "${greeting.getName()}">name : </td>
+        <!--        <td><button id="${greeting.getId()}">approve</button ></td>-->
+        <!--        <td><button id="reject101" >reject</button></td>-->
+        <button id="101" >rejectsed</button>
+        <!--       <td> <button id="'approve'+'${}'">approve</button> </td>-->
+        <!--       <td> <button id="reject_101">reject</button> </td>-->
+        <td>
+            <!-- Generate approve button with dynamic ID -->
+            <button th:id="'approve_' + ${greeting.getId()}">approve</button>
+        </td>
+        <td>
+            <!-- Generate reject button with dynamic ID -->
+            <button th:id="'reject_' + ${greeting.getId()}">reject</button>
+        </td>
+
+
+        <!--        -->
+        <!--        <td><button id="'approve_' + ${greeting.getId()}">approve</button></td>-->
+        <!--        <td><button id="'reject_'${greeting.getId()}">reject</button></td>-->
+
+    </tr>
+
+    </tbody>
+</table>
+<!--<script>-->
+<!--    document.querySelector()-->
+<!--    function setConnected(connected) {-->
+<!--        console.log("function setConnected called")-->
+<!--        $("#connect").prop("disabled", connected);-->
+<!--        $("#disconnect").prop("disabled", !connected);-->
+<!--        if (connected) {-->
+<!--            $("#conversation").show();-->
+<!--        }-->
+<!--        else {-->
+<!--            $("#conversation").hide();-->
+<!--        }-->
+<!--        $("#greetings").html("");-->
+<!--    }-->
+<!--</script>-->
+
+
+<script>
+
+    $(document).ready(function () {
+        // Add event listener for reject button with ID 101
+        $('#101').click(function () {
+            console.log("ID 101 is rejected");
+        });
+    });
+
+    // $(document).ready(function () {
+    //     // Add event listener for reject button with ID 101
+    //     $('#approve_101').click(function () {
+    //         console.log("ID 101 is approved");
+    //     });
+    // });
+    // $(document).ready(function () {
+    //     // Add event listener for reject button with ID 101
+    //     $('#reject_${greeting.getId()}').click(function () {
+    //         console.log("ID 101 is rejected");
+    //     });
+    // });
+
+    $(document).ready(function() {
+        // Event delegation for approve buttons
+        $(document).on('click', 'button[id^="approve_"]', function() {
+            var greetingId = $(this).attr('id').split('_')[1];
+
+            console.log("ID " + greetingId + " is approved");
+            console.log("making ajax call for update in DB")
+            // Make AJAX request to Spring Boot backend
+            $.post({
+                url: '/updateData', // Endpoint to handle data update
+                method: 'POST',
+                data: { id: greetingId },
+                success: function(response) {
+                    console.log("Data for ID " + greetingId + " is updated");
+                    // Optionally, update UI or perform other actions after successful update
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error updating data:", error);
+                    // Handle error scenario
+                }
+            });
+        });
+
+        // Event delegation for reject buttons
+        $(document).on('click', 'button[id^="reject_"]', function() {
+            var greetingId = $(this).attr('id').split('_')[1];
+            console.log("ID " + greetingId + " is rejected");
+        });
+    });
+
+
+    // $(document).ready(function () {
+    //     // Add event listener for approve buttons
+    //     $('button[id^="approve"]').click(function () {
+    //         var id = $(this).attr('id').replace('approve', ''); // Extract ID from button ID
+    //         console.log("ID " + id + " is approved");
+    //     });
+    //
+    //     // Add event listener for reject buttons
+    //     $('button[id^="reject"]').click(function () {
+    //         var id = $(this).attr('id').replace('reject', ''); // Extract ID from button ID
+    //         console.log("ID " + id + " is rejected");
+    //     });
+    // });
+</script>
+
+</body>
+</html >

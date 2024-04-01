@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>User Registration  Form</h1>
+<table>
+    <form id="registrationForm" action="/submit" method="post">
+        <label for="id">ID:</label><br>
+        <input type="text" id="id" name="id" required ><br><br>
+
+        <label for="name" >NAME:</label><br>
+        <input type="text" id="name" name ="name" required><br><br>
+
+        <!--        <label for="password" >PASSWORD:</label><br>-->
+        <!--        <input type="text" id="password" name="password" required><br><br>-->
+
+        <input type="submit" value="Submit Form Bro!!!!">
+        <div id="message"></div>
+
+        <script>
+            $(document).ready(
+                function () {
+                    $('#registrationForm').submit(
+                        function (event) {
+                            event.preventDefault();//prevent default form submission
+                            // Serialize form data
+                            var formData = $(this).serialize();
+                            console.log(formData);
+                            // Add extra data to formData
+                            formData += '&status=pending';
+
+                            // Send form data asynchronously
+                            $.post({
+                                url: '/submit', // Endpoint to handle form submission
+                                data: formData,
+                                success: function(response) {
+                                    // Show success message
+                                    // $('#message').text("status is pending");
+                                    console.log("Data saved successfully to the database");
+                                    // Extract ID from the submitted form data
+                                    var id = formData.split('&')[0].split('=')[1];
+
+                                    // Call function to fetch data using the extracted ID
+                                    fetchData(id);
+                                    console.log("function call completed ...")
+                                },
+                                error: function(xhr, status, error) {
+                                    // Show error message
+                                    $('#message').text("Data was unable to be saved in the database please check for duplicacy .");
+                                }
+                            });
+
+
+
+                        }
+                    );
+
+                }
+            );
+            // Function to fetch data using the provided ID
+            function fetchData(id) {
+                console.log("id is "+id);
+                // Make AJAX request to fetch data from the database using the ID
+                $.ajax({
+                    url: '/fetchStatus?id=' + id, // Endpoint to fetch data using the ID
+                    method: 'GET',
+                    dataType: 'text',
+                    success: function (responseData) {
+                        // Show success message with fetched data
+                        console.log("/fetch Data")
+                        console.log(responseData);
+                        $('#message').text("status : " + responseData);
+                    },
+                    error: function (xhr, status, error) {
+                        // Show error message for data fetching failure
+                        $('#message').text("Error fetching data from the database: " + error);
+                    }
+                });
+            }
+        </script>
+
+
+    </form>
+</table>
+</body>
+</html>
