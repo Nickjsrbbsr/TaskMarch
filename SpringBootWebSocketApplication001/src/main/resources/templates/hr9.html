@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebSocket</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/main.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="name">What is your name?</label>
+                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
+                </div>
+                <button id="send" class="btn btn-default" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Greetings</th>
+                </tr>
+                </thead>
+                <tbody id="greetings">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+// Global array to store approved messages
+var approvedMessages = [];
+var rejectedMessages =[];
+
+const stompClient = new StompJs.Client({
+brokerURL: 'ws://localhost:9098/gs-guide-websocket'
+});
+//2nd function call
+stompClient.onConnect = (frame) => {
+console.log("stompClient.onConnect called")
+setConnected(true);
+console.log('Connected: ' + frame);
+stompClient.subscribe('/topic/greetings', (greeting) => {
+showGreeting(JSON.parse(greeting.body).content);
+});
+};
+
+stompClient.onWebSocketError = (error) => {
+console.log("stompClient.onWebSocketError");
+console.error('Error with websocket', error);
+};
+
+stompClient.onStompError = (frame) => {
+console.log("stompClient.onStompError called")
+console.error('Broker reported error: ' + frame.headers['message']);
+console.error('Additional details: ' + frame.body);
+};
+//3rd function call
+function setConnected(connected) {
+console.log("function setConnected called")
+$("#connect").prop("disabled", connected);
+$("#disconnect").prop("disabled", !connected);
+if (connected) {
+$("#conversation").show();
+}
+else {
+$("#conversation").hide();
+}
+$("#greetings").html("");
+}
+//first function call
+function connect() {
+console.log("function connect() called inside that -> stompClient.activate() called ");
+stompClient.activate();
+}
+
+function disconnect() {
+console.log("function disconnect called -> stompClient.deactivate() called ");
+
+stompClient.deactivate();
+setConnected(false);
+console.log("Disconnected");
+}
+
+// function sendName() {
+//     console.log("function sendName() called ->  ");
+//
+//     console.log("stompClient.publish() called with destination '/app/hello' and etc");
+//     stompClient.publish({
+//         destination: "/app/hello2/",
+//         body: JSON.stringify({'name': $("#name").val()})
+//     });
+// }
+function sendName() {
+console.log("function sendName() called ->  ");
+
+var name = $("#name").val(); // Get the value from the name input field
+
+// Construct the dynamic destination URL using the form value
+var destinationUrl = "/app/hello2/"+name;
+
+console.log("stompClient.publish() called with destination '" + destinationUrl + "' and etc");
+stompClient.publish({
+destination: destinationUrl,
+body: JSON.stringify({'name': name})
+});
+}
+
+
+// function showGreeting(message) {
+//     console.log("showGreeting() called of hr js updated");
+//     $("#greetings").append("<tr><td>" + message + "</td></tr>");
+// }
+function showGreeting(message) {
+console.log("showGreeting() called and kritik changed some data");
+$("#greetings").append("<tr><td>" + message + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='approve-" + message + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='reject-" + message + "'>Reject</button></td></tr>");
+}
+
+
+// window.onload = () =>{
+//     $("form").on('submit', (e) => e.preventDefault());
+//     $( "#connect" ).click(() => connect());
+//     $( "#disconnect" ).click(() => disconnect());
+//     $( "#send" ).click(() => sendName());
+// };
+
+
+
+
+
+$(function () {
+$("form").on('submit', (e) => e.preventDefault());
+$( "#connect" ).click(() => connect());
+$( "#disconnect" ).click(() => disconnect());
+$( "#send" ).click(() => sendName());
+
+// Click event for approve button
+$(document).on('click', '.approve-btn', function() {
+// Extract the message ID from the button ID
+var messageId = $(this).attr('id').split('-')[1];
+console.log("id is :"+id); //added recently
+console.log()
+// Add the message to the approvedMessages array
+approvedMessages.push(messageId);
+console.log(messageId + " id is approved");
+// You can perform additional actions here if needed
+});
+
+// Click event for reject button
+$(document).on('click', '.reject-btn', function() {
+// Extract the message ID from the button ID
+var messageId = $(this).attr('id').split('-')[1];
+rejectedMessages.push(messageId);
+console.log(messageId + " id is rejected");
+// You can perform additional actions here if needed
+});
+});
+</script>`
+</body>
+</html>

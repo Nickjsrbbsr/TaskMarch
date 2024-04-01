@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Portal</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/main.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="eid">What is your id?</label>
+                    <input type="text" id="eid" class="form-control" placeholder="Your id here...">
+                    <label for="name">What is your name?</label>
+                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
+                </div>
+                <button id="send" class="btn btn-default" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Greetings</th>
+                </tr>
+                </thead>
+                <tbody id="greetings">
+                </tbody>
+                <thead>
+                <tr>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody id="dataStructure">
+                </tbody>
+            </table>
+<!--            <table id="requestStatus" class="table table-striped">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th></th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody id="dataStructure1">-->
+<!--                </tbody>-->
+<!--            </table>-->
+        </div>
+    </div>
+</div>
+<script>
+const stompClient = new StompJs.Client({
+brokerURL: 'ws://localhost:9098/gs-guide-websocket'
+});
+//2nd function call
+// stompClient.onConnect = (frame) => {
+//     console.log("stompClient.onConnect called")
+//     setConnected(true);
+//     console.log('Connected: ' + frame);
+//     console.log("subescribed to /topic/greetings");
+//
+//
+//     stompClient.subscribe('/topic/greetings', (greeting) => {
+//         showGreeting(JSON.parse(greeting.body).content);
+//     });
+// };
+
+stompClient.onConnect = (frame) => {
+console.log("stompClient.onConnect called");
+setConnected(true);
+console.log('Connected: ' + frame);
+console.log("Subscribed to dynamic URL /topic/greeting/($id)");
+
+
+};
+
+stompClient.onWebSocketError = (error) => {
+console.log("stompClient.onWebSocketError");
+console.error('Error with websocket', error);
+};
+
+stompClient.onStompError = (frame) => {
+console.log("stompClient.onStompError called")
+console.error('Broker reported error: ' + frame.headers['message']);
+console.error('Additional details: ' + frame.body);
+};
+//3rd function called
+function setConnected(connected) {
+console.log("function setConnected called")
+$("#connect").prop("disabled", connected);
+$("#disconnect").prop("disabled", !connected);
+if (connected) {
+$("#conversation").show();
+}
+else {
+$("#conversation").hide();
+}
+$("#greetings").html("");
+$("#dataStructure").html("")
+}
+//first function call
+function connect() {
+console.log("function connect() called inside that -> stompClient.activate() called ");
+stompClient.activate();
+}
+
+function disconnect() {
+console.log("function disconnect called -> stompClient.deactivate() called ");
+
+stompClient.deactivate();
+setConnected(false);
+console.log("Disconnected");
+}
+//4th function call
+// function sendName() {
+//     console.log("function sendName() called ->  ");
+//
+//     console.log("stompClient.publish() called with destination '/app/hello2' and etc");
+//     stompClient.publish({
+//         destination: "/app/hello2",
+//         body: JSON.stringify({'name': $("#name").val() ,'id':$("#eid").val()})
+//     });
+// }
+function sendName() {
+    var name = $("#name").val(); // Get the value from the name input field
+    var eid = $("#eid").val(); // Get the value from the eid input field
+console.log("function sendName() called ->  ");
+    stompClient.subscribe('/topic/greeting/'+eid, (greeting) => {
+// Extract the ID from the subscribed destination
+// const id = greeting.headers.destination.split('/').pop();
+        const messageContent = JSON.parse(greeting.body).content;
+// Pass both ID and message content to your handler function
+// showGreetings(id, messageContent);
+        showGreeting(messageContent);
+    });
+
+
+
+// Construct the dynamic destination URL using the form values
+var destinationUrl = "/app/hello";
+
+console.log("stompClient.publish() called with destination '" + destinationUrl + "' and etc");
+stompClient.publish({
+destination: destinationUrl,
+body: JSON.stringify({'name': name, 'id': eid})
+});
+    stompClient.publish({
+        destination: "/app/hello2/"+eid,
+        body: JSON.stringify({'name': name, 'id': eid})
+    });
+}
+
+//5th function call
+
+function showGreeting(message) {
+console.log("showGreeting() called and kritik changed some data");
+// Check if message is not null or undefined
+// if (message && message.id && message.name) {
+$("#dataStructure").html("<tr><td>" + message +" 'Hii from JS' "  + "</td></tr>"+"<tr><td></td></tr>")
+$("#greetings").html("<tr><td>" + message + " 'Hii from JS' " + "</td></tr>" + "<tr><td></td></tr>");
+// }else{
+// console.error("Invalid message object:", message);
+//
+// }
+    console.log(message);
+
+}
+function showGreetings(id, messageContent) {
+console.log("showGreeting() called");
+// Your logic to handle the greeting message
+console.log("Received greeting for ID: " + id + ", Content: " + messageContent);
+// Update your UI or perform other actions as needed
+console.log("showGreeting() called and kritik changed some data");
+//check if message is not null or undefined
+// if (messageContent && messageContent.id && messageContent.name) {
+// $("#dataStructure").html("<tr><td>" + messageContent +" 'Hii from JS' "  + "</td></tr>"+"<tr><td></td></tr>")
+// $("#greetings").html("<tr><td>" + messageContent + " 'Hii from JS' " + "</td></tr>" + "<tr><td></td></tr>");
+// }else{
+//     console.error("Invalid message object:", messageContent);
+
+
+}
+
+
+// window.onload = () =>{
+//     $("form").on('submit', (e) => e.preventDefault());
+//     $( "#connect" ).click(() => connect());
+//     $( "#disconnect" ).click(() => disconnect());
+//     $( "#send" ).click(() => sendName());
+// };
+
+
+
+
+
+$(function () {
+$("form").on('submit', (e) => e.preventDefault());
+$( "#connect" ).click(() => connect());
+$( "#disconnect" ).click(() => disconnect());
+$( "#send" ).click(() => sendName());
+});
+</script>
+</body>
+</html>

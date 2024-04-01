@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Page</title>
+    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+</head>
+<body>
+<form>
+    <button id="connect">Connect</button>
+    <button id="disconnect">Disconnect</button>
+</form>
+<form id="requestForm">
+
+    ID : <input type="text" id="idField"><br>
+    Name:<input type="text" id="nameField"><br>
+    <button id="send" type="submit">Submit</button>
+
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    // $(function(){
+    //     $('#requestForm').submit(function (event) {
+    //         event.preventDefault();
+    //         var id = $('#idField').val();
+    //         var name = $('#nameField').val();
+    //         var request ={id :id , name: name};
+    //         sendWebSocketMessage('/submitRequest',request);
+    //     });
+    // });
+    // function sendWebSocketMessage(destination, request) {
+    //     var socket = new WebSocket("ws://localhost:9099/ws");
+    //     socket.onopen = function (event) {
+    //         socket.send(JSON.stringify(request));
+    //
+    //     }
+    //
+    // }
+
+</script>
+</body>
+</html>

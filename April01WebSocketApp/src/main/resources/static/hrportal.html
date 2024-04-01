@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HR Portal Page</title>
+</head>
+<body>
+<div id="requestDetails"></div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    var socket = new WebSocket("ws://localhost:9099/ws");
+    socket.onmessage = function(event) {
+        var request = JSON.parse(event.data);
+        $('#requestDetails').html('ID: ' + request.id + '<br>' +
+            'Name: ' + request.name + '<br>' +
+            'Status: ' + request.status + '<br>' +
+            '<button onclick="approveRequest()">Approve</button>' +
+            '<button onclick="rejectRequest()">Reject</button>');
+    };
+    function approveRequest() {
+        var request = {id: $('#idField').val(), status: 'Approved'};
+        sendWebSocketMessage('/updateStatus', request);
+    }
+    function rejectRequest() {
+        var request = {id: $('#idField').val(), status: 'Rejected'};
+        sendWebSocketMessage('/updateStatus', request);
+    }
+    function sendWebSocketMessage(destination, data) {
+        var socket = new WebSocket("ws://localhost:8080/ws");
+        socket.onopen = function(event) {
+            socket.send(JSON.stringify(data));
+        };
+    }
+
+
+</script>
+
+</body>
