@@ -15,6 +15,7 @@ public class HelloMessage {
     private String id;
 
     private String name;
+    private String status = "pendingswe";
 
     public HelloMessage() {
     }

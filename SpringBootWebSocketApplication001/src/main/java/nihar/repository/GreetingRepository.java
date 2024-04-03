@@ -1,7 +1,7 @@
-package org.mandal.chat.springbootwebsocketapplication001.nihar.repository;
+package nihar.repository;
 
 
-import org.mandal.chat.springbootwebsocketapplication001.nihar.entity.Greeting;
+import nihar.entity.Greeting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

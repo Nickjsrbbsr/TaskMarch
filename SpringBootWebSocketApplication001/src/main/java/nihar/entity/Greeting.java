@@ -1,4 +1,4 @@
-package org.mandal.chat.springbootwebsocketapplication001.nihar.entity;
+package nihar.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

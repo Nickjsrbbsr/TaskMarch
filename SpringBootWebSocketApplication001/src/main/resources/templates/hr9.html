@@ -26,11 +26,11 @@
         </div>
         <div class="col-md-6">
             <form class="form-inline">
-                <div class="form-group">
-                    <label for="name">What is your name?</label>
-                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
-                </div>
-                <button id="send" class="btn btn-default" type="submit">Send</button>
+<!--                <div class="form-group">-->
+<!--                    <label for="name">What is your name?</label>-->
+<!--                    <input type="text" id="name" class="form-control" placeholder="Your name here..." hidden="hidden">-->
+<!--                </div>-->
+<!--                <button id="send" class="btn btn-default" type="submit" hidden="hidden">Send</button>-->
             </form>
         </div>
     </div>
@@ -58,27 +58,28 @@ brokerURL: 'ws://localhost:9098/gs-guide-websocket'
 });
 //2nd function call
 stompClient.onConnect = (frame) => {
-console.log("stompClient.onConnect called")
+console.log("stompClient.onConnect called of hr")
 setConnected(true);
 console.log('Connected: ' + frame);
 stompClient.subscribe('/topic/greetings', (greeting) => {
+    console.log("subscribe function called of hr");
 showGreeting(JSON.parse(greeting.body).content);
 });
 };
 
 stompClient.onWebSocketError = (error) => {
-console.log("stompClient.onWebSocketError");
+console.log("stompClient.onWebSocketError called of hr");
 console.error('Error with websocket', error);
 };
 
 stompClient.onStompError = (frame) => {
-console.log("stompClient.onStompError called")
+console.log("stompClient.onStompError called of hr")
 console.error('Broker reported error: ' + frame.headers['message']);
 console.error('Additional details: ' + frame.body);
 };
 //3rd function call
 function setConnected(connected) {
-console.log("function setConnected called")
+console.log("function setConnected called of hr")
 $("#connect").prop("disabled", connected);
 $("#disconnect").prop("disabled", !connected);
 if (connected) {
@@ -91,12 +92,12 @@ $("#greetings").html("");
 }
 //first function call
 function connect() {
-console.log("function connect() called inside that -> stompClient.activate() called ");
+console.log("function connect() of hr called inside that -> stompClient.activate() called ");
 stompClient.activate();
 }
 
 function disconnect() {
-console.log("function disconnect called -> stompClient.deactivate() called ");
+console.log("function disconnect called of hr -> stompClient.deactivate() called ");
 
 stompClient.deactivate();
 setConnected(false);
@@ -113,14 +114,14 @@ console.log("Disconnected");
 //     });
 // }
 function sendName() {
-console.log("function sendName() called ->  ");
+console.log("function sendName() called of hr ->  ");
 
 var name = $("#name").val(); // Get the value from the name input field
 
 // Construct the dynamic destination URL using the form value
 var destinationUrl = "/app/hello2/"+name;
 
-console.log("stompClient.publish() called with destination '" + destinationUrl + "' and etc");
+console.log("stompClient.publish() called of hr with destination '" + destinationUrl);
 stompClient.publish({
 destination: destinationUrl,
 body: JSON.stringify({'name': name})
@@ -132,10 +133,30 @@ body: JSON.stringify({'name': name})
 //     console.log("showGreeting() called of hr js updated");
 //     $("#greetings").append("<tr><td>" + message + "</td></tr>");
 // }
-function showGreeting(message) {
-console.log("showGreeting() called and kritik changed some data");
-$("#greetings").append("<tr><td>" + message + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='approve-" + message + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='reject-" + message + "'>Reject</button></td></tr>");
+// function showGreeting(message) {
+// console.log("showGreeting() called and kritik changed some data");
+// console.log(""+message);
+// $("#greetings").append("<tr><td>" + message + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='approve-" + message + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='reject-" + message + "'>Reject</button></td></tr>");
+// }
+function showGreeting(data) {
+    console.log("showGreeting() called of hr ");
+    console.log("Show greeting function input  data parameter :"+data);//
+    var arr = data.split("&&&&&");
+    var id = arr[0];
+    var name = arr[1];
+    console.log(id)
+    // console.log("name is :"+name)
+
+// Splitting the string by space
+
+    // Accessing id and name from the data object
+
+    // var name = data.name;
+
+    // Appending data to the HTML element
+    $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='"+name +"-approve-" + id + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='"+name +"-reject-" + id + "'>Reject</button></td></tr>");
 }
+
 
 
 // window.onload = () =>{
@@ -156,26 +177,58 @@ $( "#disconnect" ).click(() => disconnect());
 $( "#send" ).click(() => sendName());
 
 // Click event for approve button
-$(document).on('click', '.approve-btn', function() {
-// Extract the message ID from the button ID
-var messageId = $(this).attr('id').split('-')[1];
-console.log("id is :"+id); //added recently
-console.log()
-// Add the message to the approvedMessages array
-approvedMessages.push(messageId);
-console.log(messageId + " id is approved");
-// You can perform additional actions here if needed
-});
 
-// Click event for reject button
-$(document).on('click', '.reject-btn', function() {
-// Extract the message ID from the button ID
-var messageId = $(this).attr('id').split('-')[1];
-rejectedMessages.push(messageId);
-console.log(messageId + " id is rejected");
-// You can perform additional actions here if needed
+    $(document).on('click', '.approve-btn', function() {
+        console.log(("approve button is clicked"));
+
+
+
+        var messageId = $(this).attr('id').split('-approve-')[1];
+        var name = $(this).attr('id').split('-approve-')[0];
+        console.log("id ->"+messageId)
+        console.log("name ->"+name)
+
+        updateStatus(messageId, name, 'approved');
+    });
+    // Click event for reject button
+
+    $(document).on('click', '.reject-btn', function() {
+        console.log(("reject button is clicked"));
+        var messageId = $(this).attr('id').split('-reject-')[1];
+        var name = $(this).attr('id').split('-reject-')[0];
+        // console.log("debugger : id and name : "+messageId+name);
+        console.log("id ->"+messageId)
+        console.log("name ->"+name)
+        updateStatus(messageId,name, 'rejected');
+        // showGreeting(messageContent);
+
+    });
+
+    function updateStatus(messageId,name, status) {
+        // console.log("function update Status called ID is :"+messageId+" , name is :"+name+" and status is :"+status);
+        // Make an AJAX call to update the status in the database
+        $.ajax({
+            url: '/feedData2', // Replace this with your actual endpoint for updating the status
+            type: 'POST', // or 'PUT', 'PATCH', depending on your server's requirements
+            data: { id: messageId, name :name ,status: status },
+            success: function(response) {
+                console.log("data is successfully updated in the database");
+                // If database update is successful, send a message using STOMP
+                var destinationUrl = "/app/hello2/" + messageId;
+                stompClient.publish({
+                    destination: destinationUrl,
+                    body: JSON.stringify({ 'id': messageId, 'name':name,'status': status })
+                });
+            },
+            error: function(xhr, status, error) {
+                // If database update fails, display an alert message
+                alert("Failed to update status. Please try again later.");
+            }
+        });
+    }
+
+
 });
-});
-</script>`
+</script>
 </body>
 </html>

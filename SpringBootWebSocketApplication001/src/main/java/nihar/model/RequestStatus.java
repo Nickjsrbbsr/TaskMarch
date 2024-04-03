@@ -1,4 +1,4 @@
-package org.mandal.chat.springbootwebsocketapplication001.nihar.model;
+package nihar.model;
 
 public enum RequestStatus {
     PENDING,

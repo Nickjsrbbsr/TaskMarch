@@ -1,8 +1,8 @@
-package org.mandal.chat.springbootwebsocketapplication001.nihar.controller;
+package nihar.controller;
 
 
-import org.mandal.chat.springbootwebsocketapplication001.nihar.entity.Greeting;
-import org.mandal.chat.springbootwebsocketapplication001.nihar.repository.GreetingRepository;
+import nihar.repository.GreetingRepository;
+import nihar.entity.Greeting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

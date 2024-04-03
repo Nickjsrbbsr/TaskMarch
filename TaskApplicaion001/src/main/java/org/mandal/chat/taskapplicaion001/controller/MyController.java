@@ -15,7 +15,7 @@ import java.util.List;
 public class MyController {
 
     @Autowired
-    private GreetingRepository greetingRepository;
+    private GreetingRepository greetingRepository ;
     @Autowired
     private GreetingService greetingService;
 //    @RequestMapping(method = RequestMethod.GET , value = "/helloNihar")

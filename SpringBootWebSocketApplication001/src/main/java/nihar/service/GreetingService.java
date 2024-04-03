@@ -1,7 +1,7 @@
-package org.mandal.chat.springbootwebsocketapplication001.nihar.service;
+package nihar.service;
 
-import org.mandal.chat.springbootwebsocketapplication001.nihar.entity.Greeting;
-import org.mandal.chat.springbootwebsocketapplication001.nihar.repository.GreetingRepository;
+import nihar.repository.GreetingRepository;
+import nihar.entity.Greeting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
