@@ -26,11 +26,7 @@
         </div>
         <div class="col-md-6">
             <form class="form-inline">
-<!--                <div class="form-group">-->
-<!--                    <label for="name">What is your name?</label>-->
-<!--                    <input type="text" id="name" class="form-control" placeholder="Your name here..." hidden="hidden">-->
-<!--                </div>-->
-<!--                <button id="send" class="btn btn-default" type="submit" hidden="hidden">Send</button>-->
+
             </form>
         </div>
     </div>
@@ -104,15 +100,6 @@ setConnected(false);
 console.log("Disconnected");
 }
 
-// function sendName() {
-//     console.log("function sendName() called ->  ");
-//
-//     console.log("stompClient.publish() called with destination '/app/hello' and etc");
-//     stompClient.publish({
-//         destination: "/app/hello2/",
-//         body: JSON.stringify({'name': $("#name").val()})
-//     });
-// }
 function sendName() {
 console.log("function sendName() called of hr ->  ");
 
@@ -128,16 +115,6 @@ body: JSON.stringify({'name': name})
 });
 }
 
-
-// function showGreeting(message) {
-//     console.log("showGreeting() called of hr js updated");
-//     $("#greetings").append("<tr><td>" + message + "</td></tr>");
-// }
-// function showGreeting(message) {
-// console.log("showGreeting() called and kritik changed some data");
-// console.log(""+message);
-// $("#greetings").append("<tr><td>" + message + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='approve-" + message + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='reject-" + message + "'>Reject</button></td></tr>");
-// }
 function showGreeting(data) {
     console.log("showGreeting() called of hr ");
     console.log("Show greeting function input  data parameter :"+data);//
@@ -145,30 +122,10 @@ function showGreeting(data) {
     var id = arr[0];
     var name = arr[1];
     console.log(id)
-    // console.log("name is :"+name)
-
-// Splitting the string by space
-
-    // Accessing id and name from the data object
-
-    // var name = data.name;
 
     // Appending data to the HTML element
     $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='"+name +"-approve-" + id + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='"+name +"-reject-" + id + "'>Reject</button></td></tr>");
 }
-
-
-
-// window.onload = () =>{
-//     $("form").on('submit', (e) => e.preventDefault());
-//     $( "#connect" ).click(() => connect());
-//     $( "#disconnect" ).click(() => disconnect());
-//     $( "#send" ).click(() => sendName());
-// };
-
-
-
-
 
 $(function () {
 $("form").on('submit', (e) => e.preventDefault());

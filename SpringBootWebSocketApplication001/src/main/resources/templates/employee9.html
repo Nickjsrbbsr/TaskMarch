@@ -54,15 +54,6 @@
                 <tbody id="dataStructure">
                 </tbody>
             </table>
-<!--            <table id="requestStatus" class="table table-striped">-->
-<!--                <thead>-->
-<!--                <tr>-->
-<!--                    <th></th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody id="dataStructure1">-->
-<!--                </tbody>-->
-<!--            </table>-->
         </div>
     </div>
 </div>
@@ -70,24 +61,11 @@
 const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:9098/gs-guide-websocket'
 });
-//2nd function call
-// stompClient.onConnect = (frame) => {
-//     console.log("stompClient.onConnect called")
-//     setConnected(true);
-//     console.log('Connected: ' + frame);
-//     console.log("subescribed to /topic/greetings");
-//
-//
-//     stompClient.subscribe('/topic/greetings', (greeting) => {
-//         showGreeting(JSON.parse(greeting.body).content);
-//     });
-// };
-
 stompClient.onConnect = (frame) => {
 console.log("stompClient.onConnect called");
 setConnected(true);
 console.log('Connected: ' + frame);
-console.log("Subscribed to dynamic URL /topic/greeting/($id)");
+// console.log("Subscribed to dynamic URL /topic/greeting/($id)");
 
 
 };
@@ -129,16 +107,6 @@ stompClient.deactivate();
 setConnected(false);
 console.log("Disconnected");
 }
-//4th function call
-// function sendName() {
-//     console.log("function sendName() called ->  ");
-//
-//     console.log("stompClient.publish() called with destination '/app/hello2' and etc");
-//     stompClient.publish({
-//         destination: "/app/hello2",
-//         body: JSON.stringify({'name': $("#name").val() ,'id':$("#eid").val()})
-//     });
-// }
 function sendName() {
     console.log("function sendName() called  of employee ->  ");
 
@@ -147,43 +115,15 @@ function sendName() {
     let status = "pending";
     stompClient.subscribe('/topic/greeting/'+eid, (greeting) => {
         console.log(" subscribe method called of employee -> /topic/greeting/{id} called");
-        // console.log("The value of greeting is :"+greeting);
-        // console.log("The value of greeting.body is"+greeting.body);
-        // console.log("The value of JSON.parse(greeting.body).content is"+JSON.parse(greeting.body).content);
-        // console.log("The value of JSON.parse(greeting.body) is"+JSON.parse(greeting.body));
-        // console.log("The value of JSON.parse(greeting).content is"+JSON.parse(greeting).content); //error
-        // console.log("The value of JSON.parse(greeting) is"+JSON.parse(greeting)); //error
-
-
-
         const messageContent1 = JSON.parse(greeting.body).content;
-        // const id = messageContent1.id;
-        // const name = messageContent1.name;
-        // const status = messageContent1.status;
-
-        // const messageContent1 = JSON.parse(greeting.body).content;
         const messageContent2 = JSON.parse(greeting.body).content;
         const splitOutput = messageContent2.split("&&&&&");
 
         console.log(splitOutput);
         let status = splitOutput[2];
-        // console.log("Bro !!!!! .The status is :"+status)
-
-
-        // console.log("parsed content from hr to employee :"+messageContent1);
-        // console.log("The id is :"+id+",Name:"+name+",status:"+status);
-
-        // console.log("mandalji subscribe(greeting) called .");
-        // console.log("The value of greeting is :"+greeting);
         let name1 =  $("#name").val();
         let eid1  =$("#id").val();
         let status1 = $("#status").val();
-
-        // console.log("2name :"+name1+",id2:"+eid1+",status2:"+status1);
-        // console.log("name :"+name+",id:"+eid+",status:"+status);
-        // console.log("ajax called >>>.../feedData")
-
-
 if (status==='pending'){
         $.ajax({
             url: '/feedData', // Replace this with your actual endpoint for updating the status
@@ -197,23 +137,9 @@ if (status==='pending'){
             alert("Failed to update status. Please try again later.");
         }
     });}
-
-
-// Extract the ID from the subscribed destination
-// const id = greeting.headers.destination.split('/').pop();
         const messageContent = JSON.parse(greeting.body).content;
-// Pass both ID and message content to your handler function
-// showGreetings(id, messageContent);
         showGreeting(messageContent);
     });
-
-
-
-
-
-
-
-// Construct the dynamic destination URL using the form values
 var destinationUrl = "/app/hello";
 
 console.log("stompClient.publish() called with destination '" + destinationUrl + "' and etc");
@@ -236,50 +162,14 @@ function showGreeting(message) {
     var id = arr[0];
     var name = arr[1];
     var status = arr[2];
-    // console.log("The id got is:"+id)
-    // console.log("name is :"+name)
-    // console.log("status is :"+status)
-// console.log("showGreeting() called and kritik changed some data");
-// Check if message is not null or undefined
-// if (message && message.id && message.name) {
 $("#dataStructure").html("<tr><td>" + status +" '' "  + "</td></tr>"+"<tr><td></td></tr>")
-// $("#greetings").html("<tr><td>"'id:'"+id+"',name:' + message+ "  " + "</td></tr>" + "<tr><td></td></tr>");
     $("#greetings").html("<tr><td>id: " + id + ", name: " + name + "</td></tr><tr><td></td></tr>");
-
-// }else{
-// console.error("Invalid message object:", message);
-//
-// }
     console.log("Message is :"+message);
 
 }
 function showGreetings(id, messageContent) {
 console.log("showGreetings() called of  employee");
-// Your logic to handle the greeting message
-// console.log("Received greeting for ID: " + id + ", Content: " + messageContent);
-// Update your UI or perform other actions as needed
-// console.log("showGreeting() called and kritik changed some data");
-//check if message is not null or undefined
-// if (messageContent && messageContent.id && messageContent.name) {
-// $("#dataStructure").html("<tr><td>" + messageContent +" 'Hii from JS' "  + "</td></tr>"+"<tr><td></td></tr>")
-// $("#greetings").html("<tr><td>" + messageContent + " 'Hii from JS' " + "</td></tr>" + "<tr><td></td></tr>");
-// }else{
-//     console.error("Invalid message object:", messageContent);
-
-
 }
-
-
-// window.onload = () =>{
-//     $("form").on('submit', (e) => e.preventDefault());
-//     $( "#connect" ).click(() => connect());
-//     $( "#disconnect" ).click(() => disconnect());
-//     $( "#send" ).click(() => sendName());
-// };
-
-
-
-
 
 $(function () {
 $("form").on('submit', (e) => e.preventDefault());

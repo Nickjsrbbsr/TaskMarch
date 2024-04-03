@@ -52,18 +52,11 @@ public void updateStatusToApproved(int id, String name,String status) {
     }
 
     public void feedDataToDB2(String messageId, String name, String status) {
-//        var data = greetingRepository.findById(Integer.parseInt(messageId));
-//        if((data.isPresent())){
-//            greetingRepository.deleteById(Integer.parseInt(messageId));
-//        }
+
         JdbcDeleteExample.main(Integer.parseInt(messageId));
 
         System.out.println("Feed data 2 to db2 called");
-//        GreetingDTO dTo = new GreetingDTO();
-//        dTo.setId(Integer.parseInt(messageId));
-//        dTo.setName(name);
-//        dTo.setStatus(status);
-//        greetingRepository.save(dTo);
+
         JdbcExample.main(Integer.parseInt(messageId),name,status);
         System.out.println("feeddataToDB2 Method exceution completed>>>...");
     }

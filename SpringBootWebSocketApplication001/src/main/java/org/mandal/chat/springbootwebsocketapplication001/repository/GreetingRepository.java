@@ -16,14 +16,5 @@ public interface GreetingRepository extends CrudRepository<GreetingDTO, Integer>
     @Transactional
     @Query("UPDATE GreetingDTO g SET g.status = 'APPROVED' WHERE g.id = :id")
     void updateStatusToApprovedById(@Param("id") Integer id);
-//    @Modifying
-//    @Transactional
-//    @Query("UPDATE GreetingDTO e SET e.status = 'APPROVED' WHERE e.id = :id")
-//    void updateStatusToApprovedById(Integer id);
-//    @Modifying
-//    @Transactional
-//    @Query("INSERT INTO GreetingDto  (id, name, status) VALUES (:id, :name, :status)")
-//    void feedDataToDB(Integer id, String name, String status);
 
-//    void feedDataToDB(int i, String name, String status);
 }
