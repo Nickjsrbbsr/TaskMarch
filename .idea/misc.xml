@@ -11,6 +11,9 @@
         <option value="$PROJECT_DIR$/April01WebSocketApp/pom.xml" />
         <option value="$PROJECT_DIR$/WebSocketPractice001/pom.xml" />
         <option value="$PROJECT_DIR$/MavenMultiModuleProject/pom.xml" />
+        <option value="$PROJECT_DIR$/apache-kafka-with-spring-boot-reactive/consumer/pom.xml" />
+        <option value="$PROJECT_DIR$/apache-kafka-with-spring-boot-reactive/producer/pom.xml" />
+        <option value="$PROJECT_DIR$/apache-kafka-with-spring-boot-reactive/kafka-demo/pom.xml" />
       </list>
     </option>
   </component>

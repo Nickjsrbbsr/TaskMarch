@@ -53,7 +53,7 @@ const stompClient = new StompJs.Client({
 brokerURL: 'ws://localhost:9098/gs-guide-websocket'
 });
 //2nd function call
-stompClient.onConnect = (frame) => {
+stompClient.onConnect = (frame) => {    
 console.log("stompClient.onConnect called of hr")
 setConnected(true);
 console.log('Connected: ' + frame);
@@ -123,8 +123,13 @@ function showGreeting(data) {
     var name = arr[1];
     console.log(id)
 
-    // Appending data to the HTML element
-    $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='"+name +"-approve-" + id + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='"+name +"-reject-" + id + "'>Reject</button></td></tr>");
+    // // Appending data to the HTML element
+    // $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='"+name +"-approve-" + id + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='"+name +"-reject-" + id + "'>Reject</button></td></tr>");
+    // Append data to the HTML element
+    $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " +
+        "<button class='btn btn-success btn-sm approve-btn' id='" + name + "-approve-" + id + "'>Approve</button> " +
+        "<button class='btn btn-danger btn-sm reject-btn' id='" + name + "-reject-" + id + "'>Reject</button> " +
+        "<span id='status-" + id + "'></span></td></tr>");
 }
 
 $(function () {
@@ -137,9 +142,6 @@ $( "#send" ).click(() => sendName());
 
     $(document).on('click', '.approve-btn', function() {
         console.log(("approve button is clicked"));
-
-
-
         var messageId = $(this).attr('id').split('-approve-')[1];
         var name = $(this).attr('id').split('-approve-')[0];
         console.log("id ->"+messageId)
@@ -170,6 +172,9 @@ $( "#send" ).click(() => sendName());
             data: { id: messageId, name :name ,status: status },
             success: function(response) {
                 console.log("data is successfully updated in the database");
+                // After successfully updating the status in the database
+                // Update the status next to the button
+                $('#status-' + messageId).text(status.charAt(0).toUpperCase() + status.slice(1));
                 // If database update is successful, send a message using STOMP
                 var destinationUrl = "/app/hello2/" + messageId;
                 stompClient.publish({

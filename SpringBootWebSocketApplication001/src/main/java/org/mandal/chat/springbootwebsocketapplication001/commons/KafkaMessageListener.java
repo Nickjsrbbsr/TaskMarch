@@ -1,4 +1,4 @@
-package org.mandal.chat.kafkaandwebsockets.commons;
+package org.mandal.chat.springbootwebsocketapplication001.commons;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;

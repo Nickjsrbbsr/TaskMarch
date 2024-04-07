@@ -3,11 +3,13 @@ package org.mandal.chat.springbootwebsocketapplication001.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.mandal.chat.springbootwebsocketapplication001.dao.GreetingDAO;
 import org.mandal.chat.springbootwebsocketapplication001.model.Greeting;
 import org.mandal.chat.springbootwebsocketapplication001.model.HelloMessage;
 import org.mandal.chat.springbootwebsocketapplication001.service.GreetingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -25,31 +27,53 @@ public class GreetingController {
 
     @Autowired
     GreetingService greetingService;
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public Greeting greeting(HelloMessage message) throws Exception {
-        Thread.sleep(100); // simulated delay
-        return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) );
+//    @MessageMapping("/hello")
+//    @SendTo("/topic/greetings")
+//    public Greeting greeting(HelloMessage message) throws Exception {
+//        Thread.sleep(100); // simulated delay
+//        return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) );
+//
+//
+//    }
 
 
-    }
-
-
-    @MessageMapping("/hello2/{id}")
-    @SendTo("/topic/greeting/{id}")
-    public Greeting greeting2(@Payload HelloMessage message, @DestinationVariable String id) {
-        System.out.println("hello I am called  greeting2 ");
-        try {
-            Thread.sleep(100); // simulated delay
-            System.out.println( HtmlUtils.htmlEscape(message.getId()) );
-
-            return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) +"&&&&&"+HtmlUtils.htmlEscape(message.getStatus()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    @MessageMapping("/hello2/{id}")
+//    @SendTo("/topic/greeting/{id}")
+//    public Greeting greeting2(@Payload HelloMessage message, @DestinationVariable String id) {
+//        System.out.println("hello I am called  greeting2 ");
+//        try {
+//            Thread.sleep(100); // simulated delay
+//
+//
+//            System.out.println( HtmlUtils.htmlEscape(message.getId()) );
+//
+//            return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) +"&&&&&"+HtmlUtils.htmlEscape(message.getStatus()));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//@MessageMapping("/hello2/{id}")
+////@SendTo("/topic/greeting/{id}")
+//public void greeting2(@Payload HelloMessage message, @DestinationVariable String id) {
+//    try {
+//        Thread.sleep(100); // simulated delay
+//
+////        String topic = "/topic/greeting/" + id;
+////        String topic = "topic/greeting/"+id ;
+//        String topic = "test" ;
+//
+//        String payload = HtmlUtils.htmlEscape(message.getId()) + "&&&&&" + HtmlUtils.htmlEscape(message.getName()) + "&&&&&" + HtmlUtils.htmlEscape(message.getStatus());
+//
+//        // Produce message to Kafka topic dynamically based on id
+//        kafkaTemplate.send(new ProducerRecord<>(topic, payload));
+//    } catch (Exception e) {
+//        e.printStackTrace();
+//    }
+//}
 
 
     @GetMapping("/employee")

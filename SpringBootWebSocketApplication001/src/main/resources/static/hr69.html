@@ -1,10 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Hello WebSocket</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/main.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
 </head>
 <body>
-$END$
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Greetings</th>
+                </tr>
+                </thead>
+                <tbody id="greetings">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    // Global array to store approved messages
+    var approvedMessages = [];
+    var rejectedMessages =[];
+
+    const stompClient = new StompJs.Client({
+        brokerURL: 'ws://localhost:9098/gs-guide-websocket'
+    });
+    //2nd function call
+    stompClient.onConnect = (frame) => {
+        console.log("stompClient.onConnect called of hr")
+        setConnected(true);
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/greetings', (greeting) => {
+            console.log("subscribe function called of hr");
+            showGreeting(JSON.parse(greeting.body).content);
+        });
+    };
+
+    stompClient.onWebSocketError = (error) => {
+        console.log("stompClient.onWebSocketError called of hr");
+        console.error('Error with websocket', error);
+    };
+
+    stompClient.onStompError = (frame) => {
+        console.log("stompClient.onStompError called of hr")
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Additional details: ' + frame.body);
+    };
+    //3rd function call
+    function setConnected(connected) {
+        console.log("function setConnected called of hr")
+        $("#connect").prop("disabled", connected);
+        $("#disconnect").prop("disabled", !connected);
+        if (connected) {
+            $("#conversation").show();
+        }
+        else {
+            $("#conversation").hide();
+        }
+        $("#greetings").html("");
+    }
+    //first function call
+    function connect() {
+        console.log("function connect() of hr called inside that -> stompClient.activate() called ");
+        stompClient.activate();
+    }
+
+    function disconnect() {
+        console.log("function disconnect called of hr -> stompClient.deactivate() called ");
+
+        stompClient.deactivate();
+        setConnected(false);
+        console.log("Disconnected");
+    }
+
+    function sendName() {
+        console.log("function sendName() called of hr ->  ");
+
+        var name = $("#name").val(); // Get the value from the name input field
+
+// Construct the dynamic destination URL using the form value
+        var destinationUrl = "/app/hello2/"+name;
+
+        console.log("stompClient.publish() called of hr with destination '" + destinationUrl);
+        stompClient.publish({
+            destination: destinationUrl,
+            body: JSON.stringify({'name': name})
+        });
+    }
+
+    function showGreeting(data) {
+        console.log("showGreeting() called of hr ");
+        console.log("Show greeting function input  data parameter :"+data);//
+        var arr = data.split("&&&&&");
+        var id = arr[0];
+        var name = arr[1];
+        console.log(id)
+
+        // // Appending data to the HTML element
+        // $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " + "<button class='btn btn-success btn-sm approve-btn' id='"+name +"-approve-" + id + "'>Approve</button> <button class='btn btn-danger btn-sm reject-btn' id='"+name +"-reject-" + id + "'>Reject</button></td></tr>");
+        // Append data to the HTML element
+        $("#greetings").append("<tr><td>ID: " + id + ", Name: " + name + " 'Hii from JS bro !!!!' " +
+            "<button class='btn btn-success btn-sm approve-btn' id='" + name + "-approve-" + id + "'>Approve</button> " +
+            "<button class='btn btn-danger btn-sm reject-btn' id='" + name + "-reject-" + id + "'>Reject</button> " +
+            "<span id='status-" + id + "'></span></td></tr>");
+    }
+
+    $(function () {
+        $("form").on('submit', (e) => e.preventDefault());
+        $( "#connect" ).click(() => connect());
+        $( "#disconnect" ).click(() => disconnect());
+        $( "#send" ).click(() => sendName());
+
+// Click event for approve button
+
+        $(document).on('click', '.approve-btn', function() {
+            console.log(("approve button is clicked"));
+            var messageId = $(this).attr('id').split('-approve-')[1];
+            var name = $(this).attr('id').split('-approve-')[0];
+            console.log("id ->"+messageId)
+            console.log("name ->"+name)
+
+            updateStatus(messageId, name, 'approved');
+        });
+        // Click event for reject button
+
+        $(document).on('click', '.reject-btn', function() {
+            console.log(("reject button is clicked"));
+            var messageId = $(this).attr('id').split('-reject-')[1];
+            var name = $(this).attr('id').split('-reject-')[0];
+            // console.log("debugger : id and name : "+messageId+name);
+            console.log("id ->"+messageId)
+            console.log("name ->"+name)
+            updateStatus(messageId,name, 'rejected');
+            // showGreeting(messageContent);
+
+        });
+
+        function updateStatus(messageId,name, status) {
+            // console.log("function update Status called ID is :"+messageId+" , name is :"+name+" and status is :"+status);
+            // Make an AJAX call to update the status in the database
+            $.ajax({
+                url: '/feedData2', // Replace this with your actual endpoint for updating the status
+                type: 'POST', // or 'PUT', 'PATCH', depending on your server's requirements
+                data: { id: messageId, name :name ,status: status },
+                success: function(response) {
+                    console.log("data is successfully updated in the database");
+                    // After successfully updating the status in the database
+                    // Update the status next to the button
+                    $('#status-' + messageId).text(status.charAt(0).toUpperCase() + status.slice(1));
+                    // If database update is successful, send a message using STOMP
+                    var destinationUrl = "/app/hello2/" + messageId;
+                    stompClient.publish({
+                        destination: destinationUrl,
+                        body: JSON.stringify({ 'id': messageId, 'name':name,'status': status })
+                    });
+                },
+                error: function(xhr, status, error) {
+                    // If database update fails, display an alert message
+                    alert("Failed to update status. Please try again later.");
+                }
+            });
+        }
+
+
+    });
+</script>
 </body>
 </html>

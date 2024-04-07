@@ -1,10 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Employee Portal</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/main.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
 </head>
 <body>
-$END$
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="eid">What is your id?</label>
+                    <input type="text" id="eid" class="form-control" placeholder="Your id here...">
+                    <label for="name">What is your name?</label>
+                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
+                </div>
+                <button id="send" class="btn btn-default" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Data</th>
+                </tr>
+                </thead>
+                <tbody id="greetings">
+                </tbody>
+                <thead>
+                <tr>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody id="dataStructure">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    const stompClient = new StompJs.Client({
+        brokerURL: 'ws://localhost:9098/gs-guide-websocket'
+    });
+    stompClient.onConnect = (frame) => {
+        console.log("stompClient.onConnect called");
+        setConnected(true);
+        console.log('Connected: ' + frame);
+// console.log("Subscribed to dynamic URL /topic/greeting/($id)");
+
+
+    };
+
+    stompClient.onWebSocketError = (error) => {
+        console.log("stompClient.onWebSocketError called of employee");
+        console.error('Error with websocket', error);
+    };
+
+    stompClient.onStompError = (frame) => {
+        console.log("stompClient.onStompError called of employee" )
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Additional details: ' + frame.body);
+    };
+    //3rd function called
+    function setConnected(connected) {
+        console.log("function setConnected called")
+        $("#connect").prop("disabled", connected);
+        $("#disconnect").prop("disabled", !connected);
+        if (connected) {
+            $("#conversation").show();
+        }
+        else {
+            $("#conversation").hide();
+        }
+        $("#greetings").html("");
+        $("#dataStructure").html("")
+    }
+    //first function call
+    function connect() {
+        console.log("function connect() called of employee inside that -> stompClient.activate() called ");
+        stompClient.activate();
+    }
+
+    function disconnect() {
+        console.log("function disconnect called of employee -> stompClient.deactivate() called ");
+
+        stompClient.deactivate();
+        setConnected(false);
+        console.log("Disconnected");
+    }
+    function sendName() {
+        console.log("function sendName() called  of employee ->  ");
+
+        let name = $("#name").val(); // Get the value from the name input field
+        let eid = $("#eid").val(); // Get the value from the eid input field
+        let status = "pending";
+        stompClient.subscribe('/topic/greeting/'+eid, (greeting) => {
+            console.log(" subscribe method called of employee -> /topic/greeting/{id} called");
+            const messageContent1 = JSON.parse(greeting.body).content;
+            const messageContent2 = JSON.parse(greeting.body).content;
+            const splitOutput = messageContent2.split("&&&&&");
+
+            console.log(splitOutput);
+            let status = splitOutput[2];
+            let name1 =  $("#name").val();
+            let eid1  =$("#id").val();
+            let status1 = $("#status").val();
+            if (status==='pending'){
+                $.ajax({
+                    url: '/feedData', // Replace this with your actual endpoint for updating the status
+                    type: 'POST', // or 'PUT', 'PATCH', depending on your server's requirements
+                    data: { id: eid, name:name,status: status },
+                    success: function(response) {
+                        console.log("data updated successfully in the database");
+                    },
+                    error: function(xhr, status, error) {
+                        // If database update fails, display an alert message
+                        alert("Failed to update status. Please try again later.");
+                    }
+                });}
+            const messageContent = JSON.parse(greeting.body).content;
+            showGreeting(messageContent);
+        });
+        var destinationUrl = "/app/hello";
+
+        console.log("stompClient.publish() called with destination '" + destinationUrl + "' and etc");
+        stompClient.publish({
+            destination: destinationUrl,
+            body: JSON.stringify({'name': name, 'id': eid,'status':'pending'})
+        });
+        stompClient.publish({
+            destination: "/app/hello2/"+eid,
+            body: JSON.stringify({'name': name, 'id': eid ,'status':'pending'})
+        });
+    }
+
+    //5th function call
+
+    function showGreeting(message) {
+        console.log("function show greeting called of employee");
+
+        var arr = message.split("&&&&&");
+        var id = arr[0];
+        var name = arr[1];
+        var status = arr[2];
+        $("#dataStructure").html("<tr><td>" + status +" '' "  + "</td></tr>"+"<tr><td></td></tr>")
+        $("#greetings").html("<tr><td>id: " + id + ", name: " + name + "</td></tr><tr><td></td></tr>");
+        console.log("Message is :"+message);
+
+    }
+    function showGreetings(id, messageContent) {
+        console.log("showGreetings() called of  employee");
+    }
+
+    $(function () {
+        $("form").on('submit', (e) => e.preventDefault());
+        $( "#connect" ).click(() => connect());
+        $( "#disconnect" ).click(() => disconnect());
+        $( "#send" ).click(() => sendName());
+    });
+</script>
 </body>
 </html>

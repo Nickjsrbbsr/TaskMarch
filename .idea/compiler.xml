@@ -10,10 +10,13 @@
         <module name="MultimoduleProject" />
         <module name="MavenMultiModuleProject" />
         <module name="April01WebSocketApp" />
+        <module name="kafka-demo" />
+        <module name="producer" />
         <module name="TaskApplicaion001" />
         <module name="DeployingApp" />
         <module name="SpringBootWebSocketApplication001" />
         <module name="WebSocketPractice001" />
+        <module name="consumer" />
       </profile>
     </annotationProcessing>
   </component>
@@ -25,6 +28,9 @@
       <module name="SpringBootWebSocketApplication001" options="-parameters" />
       <module name="TaskApplicaion001" options="-parameters" />
       <module name="WebSocketPractice001" options="-parameters" />
+      <module name="consumer" options="-parameters" />
+      <module name="kafka-demo" options="-parameters" />
+      <module name="producer" options="-parameters" />
     </option>
   </component>
 </project>
