@@ -66,6 +66,10 @@ console.log("stompClient.onConnect called");
 setConnected(true);
 console.log('Connected: ' + frame);
 // console.log("Subscribed to dynamic URL /topic/greeting/($id)");
+//     stompClient.subscribe('/topic/greetings/101', (greeting) => {
+//         console.log("subscribe function called of hr");
+//         showGreeting(JSON.parse(greeting.body).content);
+//     });
 
 
 };
@@ -107,36 +111,39 @@ stompClient.deactivate();
 setConnected(false);
 console.log("Disconnected");
 }
-function sendName() {
+function sendName(options) {
     console.log("function sendName() called  of employee ->  ");
 
     let name = $("#name").val(); // Get the value from the name input field
     let eid = $("#eid").val(); // Get the value from the eid input field
-    let status = "pending";
-    stompClient.subscribe('/topic/greeting/'+eid, (greeting) => {
+    var status = "pending";
+    console.log(" name and eid and status :"+name+eid+status)
+    stompClient.subscribe('/topic/greeting/' + eid, (greeting) => {
         console.log(" subscribe method called of employee -> /topic/greeting/{id} called");
         const messageContent1 = JSON.parse(greeting.body).content;
         const messageContent2 = JSON.parse(greeting.body).content;
         const splitOutput = messageContent2.split("&&&&&");
 
         console.log(splitOutput);
-        let status = splitOutput[2];
-        let name1 =  $("#name").val();
-        let eid1  =$("#id").val();
+        var status = splitOutput[2];
+        let name1 = $("#name").val();
+        let eid1 = $("#id").val();
         let status1 = $("#status").val();
-if (status==='pending'){
-        $.ajax({
-            url: '/feedData', // Replace this with your actual endpoint for updating the status
-            type: 'POST', // or 'PUT', 'PATCH', depending on your server's requirements
-            data: { id: eid, name:name,status: status },
-        success: function(response) {
-                console.log("data updated successfully in the database");
-        },
-        error: function(xhr, status, error) {
-            // If database update fails, display an alert message
-            alert("Failed to update status. Please try again later.");
+        console.log("status , name1 ")
+        if (status === 'pending') {
+            $.ajax({
+                url: '/feedData', // Replace this with your actual endpoint for updating the status
+                type: 'POST', // or 'PUT', 'PATCH', depending on your server's requirements
+                data: {id: eid, name: name, status: status},
+                success: function (response) {
+                    console.log("data updated successfully in the database");
+                },
+                error: function (xhr, status, error) {
+                    // If database update fails, display an alert message
+                    alert("Failed to update status. Please try again later.");
+                }
+            });
         }
-    });}
         const messageContent = JSON.parse(greeting.body).content;
         showGreeting(messageContent);
     });

@@ -27,35 +27,37 @@ public class GreetingController {
 
     @Autowired
     GreetingService greetingService;
-    @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+//    @Autowired
+//    private KafkaTemplate<String, Object> kafkaTemplate;
 
-//    @MessageMapping("/hello")
-//    @SendTo("/topic/greetings")
-//    public Greeting greeting(HelloMessage message) throws Exception {
-//        Thread.sleep(100); // simulated delay
-//        return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) );
-//
-//
-//    }
+    @MessageMapping("/hello")
+    @SendTo("/topic/greetings")
+    public Greeting greeting(HelloMessage message) throws Exception {
+        Thread.sleep(100); // simulated delay
+        return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) );
 
 
-//    @MessageMapping("/hello2/{id}")
-//    @SendTo("/topic/greeting/{id}")
-//    public Greeting greeting2(@Payload HelloMessage message, @DestinationVariable String id) {
-//        System.out.println("hello I am called  greeting2 ");
-//        try {
-//            Thread.sleep(100); // simulated delay
-//
-//
-//            System.out.println( HtmlUtils.htmlEscape(message.getId()) );
-//
-//            return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) +"&&&&&"+HtmlUtils.htmlEscape(message.getStatus()));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    }
+
+
+    @MessageMapping("/hello2/{id}")
+    @SendTo("/topic/greeting/{id}")
+    public Greeting greeting2(@Payload HelloMessage message, @DestinationVariable String id) {
+        System.out.println("hello I am called  greeting2 ");
+        try {
+            Thread.sleep(100); // simulated delay
+
+
+            System.out.println( HtmlUtils.htmlEscape(message.getId()) );
+
+            return new Greeting( HtmlUtils.htmlEscape(message.getId())+"&&&&&"+HtmlUtils.htmlEscape(message.getName()) +"&&&&&"+HtmlUtils.htmlEscape(message.getStatus()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 //@MessageMapping("/hello2/{id}")
 ////@SendTo("/topic/greeting/{id}")
 //public void greeting2(@Payload HelloMessage message, @DestinationVariable String id) {
